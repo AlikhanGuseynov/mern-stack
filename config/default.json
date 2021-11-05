@@ -1,4 +1,5 @@
 {
   "port": 5000,
+  "jwtSecret": "some secret word",
   "mongoUri": "mongodb+srv://Name:nUlK9Onh4aLHO1Yu@cluster0.omyfa.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 }
