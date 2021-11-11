@@ -1,10 +1,12 @@
-import React, {useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {useHttp} from "../hooks/http.hoock";
+import {useMessage} from "../hooks/message.hoock";
+import {AuthContext} from "../context/auth.context";
 
 export const AuthPage = () => {
-
-    const {loading, request} = useHttp()
-
+    const auth = useContext(AuthContext)
+    const message = useMessage();
+    const {loading, request, error, clearError} = useHttp()
     const [form, setForm] = useState({
         email: '', password: ''
     })
@@ -13,25 +15,37 @@ export const AuthPage = () => {
         setForm({...form, [event.target.name]: event.target.value})
     }
 
+    useEffect(() => {
+        message(error)
+        clearError()
+    }, [error, message, clearError])
+
     const registerHandler = async () => {
         try {
             const data = await request('/api/auth/register', 'POST', {...form})
-            console.log(data)
+            message(data.message)
         } catch (e) {
+        }
+    }
 
+    const loginHandler = async () => {
+        try {
+            const data = await request('/api/auth/login', 'POST', {...form})
+            auth.login(data.token, data.userId)
+        } catch (e) {
         }
     }
 
     return (
         <div className='row'>
             <div className="col s6 offset-s3">
-                <h1>Сократи ссылку</h1>
-                <div className="card blue darken-1">
+                <h1>Some link</h1>
+                <div className="card white darken-1">
                     <div className="card-content white-text">
-                        <span className="card-title">Авторизация</span>
+                        <span className="card-title">Authorization</span>
                         <div className="input-field">
                             <input
-                                placeholder="Введите email"
+                                placeholder="Enter email"
                                 id="email"
                                 type="text"
                                 name="email"
@@ -42,30 +56,31 @@ export const AuthPage = () => {
                         </div>
                         <div className="input-field">
                             <input
-                                placeholder="Введите пароль"
+                                placeholder="Enter password"
                                 id="password"
                                 type="password"
                                 name="password"
                                 className="yellow-input"
                                 onChange={changeHandler}
                             />
-                            <label htmlFor="password">Пароль</label>
+                            <label htmlFor="password">Password</label>
                         </div>
                     </div>
                     <div className="card-action">
                         <button
                             className="btn yellow darken-4"
                             style={{marginRight: 10}}
+                            onClick={loginHandler}
                             disabled={loading}
                         >
-                            Войти
+                            Login
                         </button>
                         <button
                             className="btn grey lighten-1 black-text"
                             onClick={registerHandler}
                             disabled={loading}
                         >
-                            Регистрация
+                            Sign in
                         </button>
                     </div>
                 </div>
